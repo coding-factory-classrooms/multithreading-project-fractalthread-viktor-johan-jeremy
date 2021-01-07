@@ -14,10 +14,11 @@ public class FractalExplorer{
 	static final int WIDTH  = 600;
 	static final int HEIGHT = 600;
 	
-	Canvas canvas;
 	BufferedImage fractalImage;
 	
 	static final int MAX_ITER = 200;
+
+	static final String PATH_PICTURE = "./src/main/resources/static/img/mandelbrot.png";
 	
 	static final double DEFAULT_ZOOM       = 100.0;
 	static final double DEFAULT_TOP_LEFT_X = -3.0;
@@ -27,10 +28,8 @@ public class FractalExplorer{
 	double topLeftX   = DEFAULT_TOP_LEFT_X;
 	double topLeftY   = DEFAULT_TOP_LEFT_Y;
 
-	public FractalExplorer(double topLeftX, double topLeftY) {
+	public FractalExplorer() {
 		fractalImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-		this.topLeftX = topLeftX;
-		this.topLeftY = topLeftY;
 	}
 
 // -------------------------------------------------------------------
@@ -50,7 +49,7 @@ public class FractalExplorer{
 	 **/
 	
 	public void updateFractal() {
-		
+		System.out.println("update");
 		for (int x = 0; x < WIDTH; x++ ) {
 			for (int y = 0; y < HEIGHT; y++ ) {
 				
@@ -65,21 +64,21 @@ public class FractalExplorer{
 			}
 		}
 
-		canvas.repaint();
-		savePNG(fractalImage);
-
-
-
+		updatePNG(fractalImage);
 
 	} // updateFractal
 
-	public void savePNG(BufferedImage fractalImage){
+	public void updatePNG(BufferedImage fractalImage){
+		File file = new File(PATH_PICTURE);
+		if (file != null){
+			file.delete();
+		}
 		try {
-			ImageIO.write(fractalImage, "png", new File("./src/main/java/org/example/pictures/mandelbrot_"+topLeftX+"_"+topLeftY+".png"));
+			ImageIO.write(fractalImage, "png", new File(PATH_PICTURE));
+			System.out.println("image : "+ PATH_PICTURE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 // -------------------------------------------------------------------	

@@ -8,10 +8,13 @@ import spark.Spark;
 import java.util.HashMap;
 
 public class App {
+
     public static void main(String[] args) {
         initialize();
 
         Spark.get("/", (req, res) -> {
+            FractalExplorer fractalExplorer = new FractalExplorer();
+            fractalExplorer.updateFractal();
             return Template.render("home.html", new HashMap<>());
         });
     }
