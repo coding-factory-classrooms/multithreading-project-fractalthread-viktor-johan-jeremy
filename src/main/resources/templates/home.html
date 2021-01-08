@@ -1,7 +1,43 @@
 #parse("base.html")
 #@mainLayout()
-<h1>Home Template</h1>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Default title</title>
+</head>
+<body>
 <div>
-    <img src="img/mandelbrot.png" />
+    <img id="mandelbrot" src="$path" />
 </div>
+<div id="zoom" style="visibility: hidden; display:inline;" >$mandelbrot.getZoomFactor().toString()</div>
+<div id="topx" style="visibility: hidden; display:inline;" >$mandelbrot.getTopLeftX().toString()</div>
+<div id="topy" style="visibility: hidden; display:inline;" >$mandelbrot.getTopLeftY().toString()</div>
+
+<script type="text/javascript">
+
+    function mouseClick(event) {
+        zoom = document.getElementById("zoom");
+        topx = document.getElementById("topx");
+        topy = document.getElementById("topy");
+        location.replace("/fractal/" + zoom.innerHTML + "/" + event.clientX + "/" + event.clientY + "/" + "1/" + topx.innerHTML + "/"+topy.innerHTML   )
+    }
+
+    function wheelPressed(event){
+        zoom = document.getElementById("zoom");
+        topx = document.getElementById("topx");
+        topy = document.getElementById("topy");
+        location.replace("/fractal/" + zoom.innerHTML + "/" + event.clientX + "/" + event.clientY + "/" + "0/" + topx.innerHTML + "/"+topy.innerHTML  )
+    }
+
+
+
+    picture = document.getElementById("mandelbrot");
+    picture.addEventListener("click", mouseClick);
+    picture.onwheel = wheelPressed;
+
+
+</script>
+</body>
 #end
