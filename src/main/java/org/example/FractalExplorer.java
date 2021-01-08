@@ -180,25 +180,47 @@ public class FractalExplorer{
 	public void requestMovePicture(String type){
 		System.out.println("request move with type = " +type);
 		switch (type) {
-			case "up" -> {
+			case "up": {
 				moveUp();
 				System.out.println("move up");
+				break;
 			}
-			case "down" -> {
+			case "down": {
 				moveDown();
 				System.out.println("move down");
+				break;
 			}
-			case "right" -> {
+			case "right": {
 				moveRight();
 				System.out.println("move right");
+				break;
 			}
-			default -> {
+			default: {
 				moveLeft();
 				System.out.println("move left");
+				break;
 			}
 		}
 	}
+	public double getZoomFactor() {
+		return zoomFactor;
+	}
 
+	public double getTopLeftX() {
+		return topLeftX;
+	}
+
+	public double getTopLeftY() {
+		return topLeftY;
+	}
+
+	public static int getWidth() {
+		return width;
+	}
+
+	public static int getHeight() {
+		return height;
+	}
 } // FractalExplorer
 
 
