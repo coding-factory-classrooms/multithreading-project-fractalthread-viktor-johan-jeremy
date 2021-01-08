@@ -42,7 +42,7 @@ public class App {
         });
 
         Spark.get("/fractal/:w/:h", (req, res) ->{
-            FractalExplorer fractalExplorer = new FractalExplorer(-3.0,3.0,100.0,Integer.parseInt(req.params("w")),Integer.parseInt(req.params("h")));
+            FractalExplorer fractalExplorer = new FractalExplorer(-(Double.parseDouble(req.params("w"))/175),Double.parseDouble(req.params("h"))/185,100.0,Integer.parseInt(req.params("w")),Integer.parseInt(req.params("h")));
             fractalExplorer.updateFractal();
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
