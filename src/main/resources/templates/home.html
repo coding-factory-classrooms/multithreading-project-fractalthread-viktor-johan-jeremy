@@ -11,24 +11,30 @@
 <div>
     <img id="mandelbrot" src="$path" />
 </div>
+
+
 <div id="zoom" style="visibility: hidden; display:inline;" >$mandelbrot.getZoomFactor().toString()</div>
 <div id="topx" style="visibility: hidden; display:inline;" >$mandelbrot.getTopLeftX().toString()</div>
 <div id="topy" style="visibility: hidden; display:inline;" >$mandelbrot.getTopLeftY().toString()</div>
+<div id="width" style="visibility: hidden; display:inline;" >$mandelbrot.getWidth().toString()</div>
+<div id="height" style="visibility: hidden; display:inline;" >$mandelbrot.getHeight().toString()</div>
+
 
 <script type="text/javascript">
+    zoom = document.getElementById("zoom").innerHTML;
+    topx = document.getElementById("topx").innerHTML;
+    topy = document.getElementById("topy").innerHTML;
 
     function mouseClick(event) {
-        zoom = document.getElementById("zoom");
-        topx = document.getElementById("topx");
-        topy = document.getElementById("topy");
-        location.replace("/fractal/" + zoom.innerHTML + "/" + event.clientX + "/" + event.clientY + "/" + "1/" + topx.innerHTML + "/"+topy.innerHTML   )
+        width = window.innerWidth;
+        height = window.innerHeight;
+        location.replace("/fractal/" + zoom + "/" + event.clientX + "/" + event.clientY + "/" + "1/" + topx + "/"+topy+"/"+width+"/"+height)
     }
 
     function wheelPressed(event){
-        zoom = document.getElementById("zoom");
-        topx = document.getElementById("topx");
-        topy = document.getElementById("topy");
-        location.replace("/fractal/" + zoom.innerHTML + "/" + event.clientX + "/" + event.clientY + "/" + "0/" + topx.innerHTML + "/"+topy.innerHTML  )
+        width = window.innerWidth;
+        height = window.innerHeight;
+        location.replace("/fractal/" + zoom + "/" + event.clientX + "/" + event.clientY + "/" + "0/" + topx + "/"+topy+"/"+width+"/"+height)
     }
 
 

@@ -3,3 +3,7 @@ img{
     margin-top: -9px;
     margin-left: -9px;
 }
+
+body{
+    overflow: hidden;
+}

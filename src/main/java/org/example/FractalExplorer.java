@@ -11,28 +11,26 @@ import java.io.IOException;
 
 public class FractalExplorer{
 	
-	static final int WIDTH  = 600;
-	static final int HEIGHT = 600;
-	
 	BufferedImage fractalImage;
 	
-	static final int MAX_ITER = 200;
+	static final int MAX_ITER = 400;
 
 	static final String PATH_PICTURE = "./src/main/resources/static/img/mandelbrot.png";
-	
-	static final double DEFAULT_ZOOM       = 100.0;
-	static final double DEFAULT_TOP_LEFT_X = -3.0;
-	static final double DEFAULT_TOP_LEFT_Y = +3.0;
 
-	double zoomFactor = DEFAULT_ZOOM;
-	double topLeftX   = DEFAULT_TOP_LEFT_X;
-	double topLeftY   = DEFAULT_TOP_LEFT_Y;
+	static int width;
+	static int height;
 
-	public FractalExplorer(double topx, double topy, double zoomFactor) {
+	double zoomFactor;
+	double topLeftX;
+	double topLeftY;
+
+	public FractalExplorer(double topx, double topy, double zoomFactor, int width, int height) {
 		this.topLeftX = topx;
 		this.topLeftY = topy;
+		this.width = width;
+		this.height = height;
 		this.zoomFactor = zoomFactor;
-		fractalImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		fractalImage = new BufferedImage(FractalExplorer.width, FractalExplorer.height, BufferedImage.TYPE_INT_RGB);
 	}
 
 // -------------------------------------------------------------------
@@ -54,8 +52,8 @@ public class FractalExplorer{
 	
 	public void updateFractal() {
 		System.out.println("update");
-		for (int x = 0; x < WIDTH; x++ ) {
-			for (int y = 0; y < HEIGHT; y++ ) {
+		for (int x = 0; x < width; x++ ) {
+			for (int y = 0; y < height; y++ ) {
 				
 				double c_r = getXPos(x);
 				double c_i = getYPos(y);
@@ -148,25 +146,25 @@ public class FractalExplorer{
 	} // computeIterations
 // -------------------------------------------------------------------
 	private void moveUp() {
-		double curHeight = HEIGHT / zoomFactor;
+		double curHeight = height / zoomFactor;
 		topLeftY += curHeight / 6;
 		updateFractal();
 	} // moveUp
 // -------------------------------------------------------------------
 	private void moveDown() {
-		double curHeight = HEIGHT / zoomFactor;
+		double curHeight = height / zoomFactor;
 		topLeftY -= curHeight / 6;
 		updateFractal();
 	} // moveDown
 // -------------------------------------------------------------------
 	private void moveLeft() {
-		double curWidth = WIDTH / zoomFactor;
+		double curWidth = width / zoomFactor;
 		topLeftX -= curWidth / 6;
 		updateFractal();
 	} // moveLeft
 // -------------------------------------------------------------------
 	private void moveRight() {
-		double curWidth = WIDTH / zoomFactor;
+		double curWidth = width / zoomFactor;
 		topLeftX += curWidth / 6;
 		updateFractal();
 	} // moveRight
@@ -179,8 +177,8 @@ public class FractalExplorer{
 		
 		zoomFactor = newZoomFactor;
 		
-		topLeftX -= ( WIDTH/2) / zoomFactor;
-		topLeftY += (HEIGHT/2) / zoomFactor;
+		topLeftX -= ( width /2) / zoomFactor;
+		topLeftY += (height /2) / zoomFactor;
 		System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updateFractal();
 		
@@ -213,6 +211,13 @@ public class FractalExplorer{
 		return topLeftY;
 	}
 
+	public static int getWidth() {
+		return width;
+	}
+
+	public static int getHeight() {
+		return height;
+	}
 } // FractalExplorer
 
 
