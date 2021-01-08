@@ -25,15 +25,11 @@
 
     // zoom +
     function mouseClick(event) {
-        width = window.innerWidth;
-        height = window.innerHeight;
         zoomRedirecting("1");
     }
 
     // zoom -
     function wheelPressed(event){
-        width = window.innerWidth;
-        height = window.innerHeight;
         zoomRedirecting("0");
     }
 
@@ -43,9 +39,7 @@
 
     // utilisation de zqsd
     function onKeyDown(event){
-        width = window.innerWidth;
-        height = window.innerHeight;
-        var keyCode = event.keyCode;
+        let keyCode = event.keyCode;
         switch(keyCode){
             case 90:  //z
                 navRedirecting("up");
@@ -66,12 +60,14 @@
 
 
     function zoomRedirecting(type){
+        let width = window.innerWidth;
+        let height = window.innerHeight;
         location.replace("/fractal/" + zoom + "/" + event.clientX + "/" + event.clientY + "/" + type +"/" + topx + "/"+topy+"/"+width+"/"+height);
     }
 
     function navRedirecting(type){
-        width = window.innerWidth;
-        height = window.innerHeight;
+        let width = window.innerWidth;
+        let height = window.innerHeight;
         location.replace("/fractal/" + type + "/" + zoom + "/" + topx + "/"+topy+"/"+width+"/"+height)
     }
 
