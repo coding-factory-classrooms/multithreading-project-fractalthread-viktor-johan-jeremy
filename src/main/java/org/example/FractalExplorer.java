@@ -1,7 +1,8 @@
-package org.example; /**
- * A Fractal Explorer created in Java
- * @author William Fiset, william.alexandre.fiset@gmail.com
- **/
+package org.example;
+ /*
+  A Fractal Explorer created in Java
+  @author Notre equipe de 3 professionnels Jeremy Viktor et Johan
+ */
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -11,14 +12,14 @@ import java.io.IOException;
 
 public class FractalExplorer{
 	
-	BufferedImage fractalImage;
+	private final BufferedImage fractalImage;
 	
-	static final int MAX_ITER = 400;
+	private static final int MAX_ITER = 400;
 
-	static final String PATH_PICTURE = "./src/main/resources/static/img/mandelbrot.png";
+	private static final String PATH_PICTURE = "./src/main/resources/static/img/mandelbrot.png";
 
-	static int width;
-	static int height;
+	private static int width;
+	private static int height;
 
 	double zoomFactor;
 	double topLeftX;
@@ -27,10 +28,10 @@ public class FractalExplorer{
 	public FractalExplorer(double topx, double topy, double zoomFactor, int width, int height) {
 		this.topLeftX = topx;
 		this.topLeftY = topy;
-		this.width = width;
-		this.height = height;
+		FractalExplorer.width = width;
+		FractalExplorer.height = height;
 		this.zoomFactor = zoomFactor;
-		fractalImage = new BufferedImage(FractalExplorer.width, FractalExplorer.height, BufferedImage.TYPE_INT_RGB);
+		this.fractalImage = new BufferedImage(FractalExplorer.width, FractalExplorer.height, BufferedImage.TYPE_INT_RGB);
 	}
 
 // -------------------------------------------------------------------
@@ -71,17 +72,13 @@ public class FractalExplorer{
 	} // updateFractal
 
 	public void updatePNG(BufferedImage fractalImage){
-		File file = new File(PATH_PICTURE);
-		if (file != null){
-			file.delete();
-		}
 		try {
 			ImageIO.write(fractalImage, "png", new File(PATH_PICTURE));
 			System.out.println("image : "+ PATH_PICTURE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	} // updatePNG
 
 // -------------------------------------------------------------------	
 	/** Returns a posterized color based off of the iteration count
@@ -102,29 +99,12 @@ public class FractalExplorer{
 // -------------------------------------------------------------------
 
 	private int computeIterations(double c_r, double c_i) {
-		
-		/*
-		
-		Let c = c_r + c_i
-		Let z = z_r + z_i
-		
-		z' = z*z + c
-		   = (z_r + z_i)(z_r + z_i) + (c_r + c_i)
-		   = z_r² + 2*z_r*z_i - z_i² + c_r + c_i
-
-		     z_r' = z_r² - z_i² + c_r
-		     z_i' = 2*z_i*z_r + c_i
-		     
-		*/
 
 		double z_r = 0.0;
 		double z_i = 0.0;
 		
 		int iterCount = 0;
 
-		// Modulus (distance) formula:
-		// √(a² + b²) <= 2.0
-		// a² + b² <= 4.0
 		while ( z_r*z_r + z_i*z_i <= 4.0 ) {
 			
 			double z_r_tmp = z_r;
@@ -144,6 +124,8 @@ public class FractalExplorer{
 		return iterCount;
 		
 	} // computeIterations
+
+
 // -------------------------------------------------------------------
 	private void moveUp() {
 		double curHeight = height / zoomFactor;
@@ -177,7 +159,7 @@ public class FractalExplorer{
 		
 		zoomFactor = newZoomFactor;
 		
-		topLeftX -= ( width /2) / zoomFactor;
+		topLeftX -= (width /2) / zoomFactor;
 		topLeftY += (height /2) / zoomFactor;
 		System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updateFractal();
@@ -197,46 +179,26 @@ public class FractalExplorer{
 
 	public void requestMovePicture(String type){
 		System.out.println("request move with type = " +type);
-		if(type.equals("up")){
-			moveUp();
-			System.out.println("move up");
-		} else
-			if (type.equals("down")){
+		switch (type) {
+			case "up" -> {
+				moveUp();
+				System.out.println("move up");
+			}
+			case "down" -> {
 				moveDown();
 				System.out.println("move down");
-			} else
-				if (type.equals("right")){
-					moveRight();
-					System.out.println("move right");
-				}else{
-					moveLeft();
-					System.out.println("move left");
-				}
+			}
+			case "right" -> {
+				moveRight();
+				System.out.println("move right");
+			}
+			default -> {
+				moveLeft();
+				System.out.println("move left");
+			}
+		}
 	}
 
-	public static String getPathPicture() {
-		return PATH_PICTURE;
-	}
-
-	public double getZoomFactor() {
-		return zoomFactor;
-	}
-
-	public double getTopLeftX() {
-		return topLeftX;
-	}
-
-	public double getTopLeftY() {
-		return topLeftY;
-	}
-
-	public static int getWidth() {
-		return width;
-	}
-
-	public static int getHeight() {
-		return height;
-	}
 } // FractalExplorer
 
 

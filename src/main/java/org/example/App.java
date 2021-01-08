@@ -12,10 +12,10 @@ public class App {
     public static void main(String[] args) {
         initialize();
 
-        Spark.get("/", (req, res) -> {
-            return Template.render("start.html", new HashMap<>());
-        });
+        //utiliser pour aller chercher la taille de la fenêtre du navigateur
+        Spark.get("/", (req, res) -> Template.render("start.html", new HashMap<>()));
 
+        //quand on clique pour zoomer / dézoomer
         Spark.get("/fractal/:zoomFactor/:x/:y/:action/:topx/:topy/:width/:height", (req, res) ->{
             double zoomFactor = Double.parseDouble(req.params("zoomFactor"));
             double x =  Double.parseDouble(req.params("x"));
@@ -36,11 +36,13 @@ public class App {
 
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
+            //         ../ pour chaque param dans l'adresse
             model.put("path", "../../../../../../../../img/mandelbrot.png");
 
             return Template.render("home.html", model);
         });
 
+        //après avoir récupérer le width et le height de la fenêtre du naviateur
         Spark.get("/fractal/:w/:h", (req, res) ->{
             FractalExplorer fractalExplorer = new FractalExplorer(
                     -(Double.parseDouble(req.params("w"))/175),
@@ -50,12 +52,16 @@ public class App {
                     Integer.parseInt(req.params("h")
                     ));
             fractalExplorer.updateFractal();
+
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
+            //      ../ pour chaque param dans l'adresse
             model.put("path", "../../img/mandelbrot.png");
+
             return Template.render("home.html", model);
         });
 
+        //dans le cas où l'on se déplace avec zqsd
         Spark.get("/fractal/:type/:zoom/:topx/:topy/:width/:height", (req, res) ->{
             FractalExplorer fractalExplorer = new FractalExplorer(
                     Double.parseDouble(req.params("topx")),
@@ -65,9 +71,12 @@ public class App {
                     Integer.parseInt(req.params("height"))
             );
             fractalExplorer.requestMovePicture(req.params("type"));
+
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
+            //      ../ pour chaque param dans l'adresse
             model.put("path", "../../../../../../img/mandelbrot.png");
+
             return Template.render("home.html", model);
         });
     }
