@@ -184,7 +184,7 @@ public class FractalExplorer{
 		
 	} // adjustZoom
 
-	public void requestPictureGeneration(double zoomFactor,double x,double y, int action){
+	public void requestZoomPicture(double x,double y, int action){
 		System.out.println("click : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		if(action == 0){
 			adjustZoom(x,y,zoomFactor/2);
@@ -193,6 +193,25 @@ public class FractalExplorer{
 			adjustZoom(x,y,zoomFactor*2);
 		}
 
+	}
+
+	public void requestMovePicture(String type){
+		System.out.println("request move with type = " +type);
+		if(type.equals("up")){
+			moveUp();
+			System.out.println("move up");
+		} else
+			if (type.equals("down")){
+				moveDown();
+				System.out.println("move down");
+			} else
+				if (type.equals("right")){
+					moveRight();
+					System.out.println("move right");
+				}else{
+					moveLeft();
+					System.out.println("move left");
+				}
 	}
 
 	public static String getPathPicture() {

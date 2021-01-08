@@ -32,7 +32,7 @@ public class App {
             System.out.println("height = " + height);
 
             FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor,width,height);
-            fractalExplorer.requestPictureGeneration(zoomFactor,x,y,action);
+            fractalExplorer.requestZoomPicture(x,y,action);
 
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
@@ -42,11 +42,32 @@ public class App {
         });
 
         Spark.get("/fractal/:w/:h", (req, res) ->{
-            FractalExplorer fractalExplorer = new FractalExplorer(-(Double.parseDouble(req.params("w"))/175),Double.parseDouble(req.params("h"))/185,100.0,Integer.parseInt(req.params("w")),Integer.parseInt(req.params("h")));
+            FractalExplorer fractalExplorer = new FractalExplorer(
+                    -(Double.parseDouble(req.params("w"))/175),
+                    Double.parseDouble(req.params("h"))/185,
+                    100.0,
+                    Integer.parseInt(req.params("w")),
+                    Integer.parseInt(req.params("h")
+                    ));
             fractalExplorer.updateFractal();
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
             model.put("path", "../../img/mandelbrot.png");
+            return Template.render("home.html", model);
+        });
+
+        Spark.get("/fractal/:type/:zoom/:topx/:topy/:width/:height", (req, res) ->{
+            FractalExplorer fractalExplorer = new FractalExplorer(
+                    Double.parseDouble(req.params("topx")),
+                    Double.parseDouble(req.params("topy")),
+                    Double.parseDouble(req.params("zoom")),
+                    Integer.parseInt(req.params("width")),
+                    Integer.parseInt(req.params("height"))
+            );
+            fractalExplorer.requestMovePicture(req.params("type"));
+            HashMap<String, Object> model = new HashMap<>();
+            model.put("mandelbrot", fractalExplorer);
+            model.put("path", "../../../../../../img/mandelbrot.png");
             return Template.render("home.html", model);
         });
     }
