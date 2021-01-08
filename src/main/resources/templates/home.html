@@ -37,12 +37,38 @@
         location.replace("/fractal/" + zoom + "/" + event.clientX + "/" + event.clientY + "/" + "0/" + topx + "/"+topy+"/"+width+"/"+height)
     }
 
-
-
     picture = document.getElementById("mandelbrot");
     picture.addEventListener("click", mouseClick);
     picture.onwheel = wheelPressed;
 
+
+    window.addEventListener("keydown", onKeyDown, false);
+
+    function onKeyDown(event){
+        width = window.innerWidth;
+        height = window.innerHeight;
+        var keyCode = event.keyCode;
+        switch(keyCode){
+            case 90:  //z
+                location.replace("/fractal/up"+ "/" + zoom + "/" + topx + "/"+topy+"/"+width+"/"+height);
+                break;
+            case 68:  //d
+                location.replace("/fractal/right"+ "/" + zoom + "/" + topx + "/"+topy+"/"+width+"/"+height);
+                break;
+            case 83:  //s
+                location.replace("/fractal/down"+ "/" + zoom + "/" + topx + "/"+topy+"/"+width+"/"+height);
+                break;
+            case 81:  //a
+                location.replace("/fractal/left"+ "/" + zoom + "/" + topx + "/"+topy+"/"+width+"/"+height);
+                break;
+        }
+    }
+
+    function navRedirecting(type){
+        width = window.innerWidth;
+        height = window.innerHeight;
+        location.replace("/fractal/" + type + "/" + zoom + "/" + topx + "/"+topy+"/"+width+"/"+height)
+    }
 
 </script>
 </body>
