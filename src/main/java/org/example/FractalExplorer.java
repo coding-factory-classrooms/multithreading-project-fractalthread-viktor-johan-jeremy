@@ -23,12 +23,15 @@ public class FractalExplorer{
 	static final double DEFAULT_ZOOM       = 100.0;
 	static final double DEFAULT_TOP_LEFT_X = -3.0;
 	static final double DEFAULT_TOP_LEFT_Y = +3.0;
-	
+
 	double zoomFactor = DEFAULT_ZOOM;
 	double topLeftX   = DEFAULT_TOP_LEFT_X;
 	double topLeftY   = DEFAULT_TOP_LEFT_Y;
 
-	public FractalExplorer() {
+	public FractalExplorer(double topx, double topy, double zoomFactor) {
+		this.topLeftX = topx;
+		this.topLeftY = topy;
+		this.zoomFactor = zoomFactor;
 		fractalImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	}
 
@@ -41,7 +44,8 @@ public class FractalExplorer{
 		return y/zoomFactor - topLeftY;
 	} // getYPos
 // -------------------------------------------------------------------
-	
+
+
 	/**
 	 * Updates the fractal by computing the number of iterations
 	 * for each point in the fractal and changing the color
@@ -63,7 +67,7 @@ public class FractalExplorer{
 				
 			}
 		}
-
+		System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updatePNG(fractalImage);
 
 	} // updateFractal
@@ -177,10 +181,37 @@ public class FractalExplorer{
 		
 		topLeftX -= ( WIDTH/2) / zoomFactor;
 		topLeftY += (HEIGHT/2) / zoomFactor;
-		
+		System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updateFractal();
 		
 	} // adjustZoom
+
+	public void requestPictureGeneration(double zoomFactor,double x,double y, int action){
+		System.out.println("click : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
+		if(action == 0){
+			adjustZoom(x,y,zoomFactor/2);
+		}
+		else{
+			adjustZoom(x,y,zoomFactor*2);
+		}
+
+	}
+
+	public static String getPathPicture() {
+		return PATH_PICTURE;
+	}
+
+	public double getZoomFactor() {
+		return zoomFactor;
+	}
+
+	public double getTopLeftX() {
+		return topLeftX;
+	}
+
+	public double getTopLeftY() {
+		return topLeftY;
+	}
 
 } // FractalExplorer
 

@@ -13,9 +13,31 @@ public class App {
         initialize();
 
         Spark.get("/", (req, res) -> {
-            FractalExplorer fractalExplorer = new FractalExplorer();
+            FractalExplorer fractalExplorer = new FractalExplorer(-3.0,3.0,100.0);
             fractalExplorer.updateFractal();
-            return Template.render("home.html", new HashMap<>());
+            HashMap<String, Object> model = new HashMap<>();
+            model.put("mandelbrot", fractalExplorer);
+            model.put("path", "/img/mandelbrot.png");
+            return Template.render("home.html", model);
+        });
+
+        Spark.get("/fractal/:zoomFactor/:x/:y/:action/:topx/:topy", (req, res) ->{
+            double zoomFactor = Double.parseDouble(req.params("zoomFactor"));
+            double x =  Double.parseDouble(req.params("x"));
+            double y = Double.parseDouble(req.params("y"));
+            int action = Integer.parseInt(req.params("action"));
+
+            double topx = Double.parseDouble(req.params("topx"));
+            double topy = Double.parseDouble(req.params("topy"));
+
+            FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor);
+            fractalExplorer.requestPictureGeneration(zoomFactor,x,y,action);
+
+            HashMap<String, Object> model = new HashMap<>();
+            model.put("mandelbrot", fractalExplorer);
+            model.put("path", "../../../../../../img/mandelbrot.png");
+
+            return Template.render("home.html", model);
         });
     }
 
