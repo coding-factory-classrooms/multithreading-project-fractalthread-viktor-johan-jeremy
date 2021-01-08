@@ -13,15 +13,10 @@ public class App {
         initialize();
 
         Spark.get("/", (req, res) -> {
-            FractalExplorer fractalExplorer = new FractalExplorer(-3.0,3.0,100.0);
-            fractalExplorer.updateFractal();
-            HashMap<String, Object> model = new HashMap<>();
-            model.put("mandelbrot", fractalExplorer);
-            model.put("path", "/img/mandelbrot.png");
-            return Template.render("home.html", model);
+            return Template.render("start.html", new HashMap<>());
         });
 
-        Spark.get("/fractal/:zoomFactor/:x/:y/:action/:topx/:topy", (req, res) ->{
+        Spark.get("/fractal/:zoomFactor/:x/:y/:action/:topx/:topy/:width/:height", (req, res) ->{
             double zoomFactor = Double.parseDouble(req.params("zoomFactor"));
             double x =  Double.parseDouble(req.params("x"));
             double y = Double.parseDouble(req.params("y"));
@@ -30,13 +25,28 @@ public class App {
             double topx = Double.parseDouble(req.params("topx"));
             double topy = Double.parseDouble(req.params("topy"));
 
-            FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor);
+            int width = Integer.parseInt(req.params("width"));
+            System.out.println("width = " + width);
+
+            int height = Integer.parseInt(req.params("height"));
+            System.out.println("height = " + height);
+
+            FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor,width,height);
             fractalExplorer.requestPictureGeneration(zoomFactor,x,y,action);
 
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
-            model.put("path", "../../../../../../img/mandelbrot.png");
+            model.put("path", "../../../../../../../../img/mandelbrot.png");
 
+            return Template.render("home.html", model);
+        });
+
+        Spark.get("/fractal/:w/:h", (req, res) ->{
+            FractalExplorer fractalExplorer = new FractalExplorer(-3.0,3.0,100.0,Integer.parseInt(req.params("w")),Integer.parseInt(req.params("h")));
+            fractalExplorer.updateFractal();
+            HashMap<String, Object> model = new HashMap<>();
+            model.put("mandelbrot", fractalExplorer);
+            model.put("path", "../../img/mandelbrot.png");
             return Template.render("home.html", model);
         });
     }
