@@ -18,19 +18,26 @@
     topx = $mandelbrot.getTopLeftX().toString();
     topy = $mandelbrot.getTopLeftY().toString();
 
+    let scale = 1;
+    let noAction = true;
 
     picture = document.getElementById("mandelbrot");
-    picture.addEventListener("click", mouseClick);
-    picture.onwheel = wheelPressed;
+    picture.onwheel = wheel;
 
-    // zoom +
-    function mouseClick(event) {
-        zoomRedirecting("1");
-    }
-
-    // zoom -
-    function wheelPressed(event){
-        zoomRedirecting("0");
+    // zoom
+    function wheel(event){
+        if(noAction){
+            noAction = false;
+            event.preventDefault();
+            scale += event.deltaY * -0.01;
+            if (scale > 1){
+                zoomRedirecting("1");
+            } else {
+                zoomRedirecting("0");
+            }
+        } else {
+            console.log("wait a bit don't spam !");
+        }
     }
 
 
