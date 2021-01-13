@@ -5,6 +5,7 @@ import org.example.core.Template;
 import org.example.middlewares.LoggerMiddleware;
 import spark.Spark;
 
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 public class App {
@@ -12,11 +13,14 @@ public class App {
     public static void main(String[] args) {
         initialize();
 
+        LRUCache<String, BufferedImage> cache = new LRUCache<>(10);
+
         //utiliser pour aller chercher la taille de la fenêtre du navigateur
         Spark.get("/", (req, res) -> Template.render("start.html", new HashMap<>()));
 
         //quand on clique pour zoomer / dézoomer
         Spark.get("/fractal/:zoomFactor/:x/:y/:action/:topx/:topy/:width/:height", (req, res) ->{
+
             double zoomFactor = Double.parseDouble(req.params("zoomFactor"));
             double x =  Double.parseDouble(req.params("x"));
             double y = Double.parseDouble(req.params("y"));
@@ -31,10 +35,19 @@ public class App {
             int height = Integer.parseInt(req.params("height"));
             System.out.println("height = " + height);
 
-            FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor,width,height);
-            fractalExplorer.requestZoomPicture(x,y,action);
-
             HashMap<String, Object> model = new HashMap<>();
+            FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor,width,height);
+
+            fractalExplorer.requestZoomPicture(x,y,action);
+            BufferedImage imageInCache = cache.get(fractalExplorer.provideKey());
+            if(imageInCache != null){
+                System.out.println("image found in cache !");
+                fractalExplorer.updatePNG(imageInCache);
+            } else {
+                System.out.println("image not found in cache !");
+                fractalExplorer.updateFractal();
+                cache.put(fractalExplorer.provideKey(), fractalExplorer.getFractalImage());
+            }
             model.put("mandelbrot", fractalExplorer);
             //         ../ pour chaque param dans l'adresse
             model.put("path", "../../../../../../../../img/mandelbrot.png");
@@ -42,7 +55,7 @@ public class App {
             return Template.render("home.html", model);
         });
 
-        //après avoir récupérer le width et le height de la fenêtre du naviateur
+        //après avoir récupéré le width et le height de la fenêtre du naviateur
         Spark.get("/fractal/:w/:h", (req, res) ->{
             FractalExplorer fractalExplorer = new FractalExplorer(
                     -(Double.parseDouble(req.params("w"))/175),
@@ -70,7 +83,17 @@ public class App {
                     Integer.parseInt(req.params("width")),
                     Integer.parseInt(req.params("height"))
             );
+
             fractalExplorer.requestMovePicture(req.params("type"));
+            BufferedImage imageInCache = cache.get(fractalExplorer.provideKey());
+            if(imageInCache != null){
+                System.out.println("image found in cache !");
+                fractalExplorer.updatePNG(imageInCache);
+            } else {
+                System.out.println("image not found in cache !");
+                fractalExplorer.updateFractal();
+                cache.put(fractalExplorer.provideKey(), fractalExplorer.getFractalImage());
+            }
 
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
@@ -80,6 +103,7 @@ public class App {
             return Template.render("home.html", model);
         });
     }
+
 
     static void initialize() {
         Template.initialize();
