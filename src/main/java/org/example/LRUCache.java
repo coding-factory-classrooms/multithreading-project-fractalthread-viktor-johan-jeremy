@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -7,11 +8,15 @@ import java.util.concurrent.locks.ReentrantLock;
 public class LRUCache<K, V> {
     private Node<K, V> lru;
     private Node<K, V> mru;
-    private Map<K, Node<K, V>> container;
-    private int capacity;
+    private final Map<K, Node<K, V>> container;
+    private final int capacity;
     private int currentSize;
 
+<<<<<<< Updated upstream
     private final ReentrantLock lock = new ReentrantLock();
+=======
+    private final static ReentrantLock lock = new ReentrantLock();
+>>>>>>> Stashed changes
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
@@ -65,6 +70,7 @@ public class LRUCache<K, V> {
     public void put(K key, V value) {
         lock.lock();
         if (container.containsKey(key)) {
+            lock.unlock();
             return;
         }
 

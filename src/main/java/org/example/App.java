@@ -4,8 +4,10 @@ import org.example.core.Conf;
 import org.example.core.Template;
 import org.example.middlewares.LoggerMiddleware;
 import spark.Spark;
+import spark.utils.IOUtils;
 
 import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.HashMap;
 
 public class App {
@@ -13,13 +15,15 @@ public class App {
     public static void main(String[] args) {
         initialize();
 
-        LRUCache<String, BufferedImage> cache = new LRUCache<>(10);
+        LRUCache<String, File> cache = new LRUCache<>(5);
+        final String cachePath = "org/example/cachePictures";
 
         //utiliser pour aller chercher la taille de la fenêtre du navigateur
         Spark.get("/", (req, res) -> Template.render("start.html", new HashMap<>()));
 
         //quand on clique pour zoomer / dézoomer
         Spark.get("/fractal/:zoomFactor/:x/:y/:action/:topx/:topy/:width/:height", (req, res) ->{
+            String racine = "../../../../../../../../";
 
             double zoomFactor = Double.parseDouble(req.params("zoomFactor"));
             double x =  Double.parseDouble(req.params("x"));
@@ -39,18 +43,18 @@ public class App {
             FractalExplorer fractalExplorer = new FractalExplorer(topx,topy,zoomFactor,width,height);
 
             fractalExplorer.requestZoomPicture(x,y,action);
-            BufferedImage imageInCache = cache.get(fractalExplorer.provideKey());
+            File imageInCache = cache.get(fractalExplorer.provideKey());
             if(imageInCache != null){
+
                 System.out.println("image found in cache !");
-                fractalExplorer.updatePNG(imageInCache);
             } else {
                 System.out.println("image not found in cache !");
                 fractalExplorer.updateFractal();
-                cache.put(fractalExplorer.provideKey(), fractalExplorer.getFractalImage());
+               // cache.put(fractalExplorer.provideKey(), x);
+                //         ../ pour chaque param dans l'adresse
+                //model.put("path", "../../../../../../../../../../org/example/cachePictures" + );
             }
             model.put("mandelbrot", fractalExplorer);
-            //         ../ pour chaque param dans l'adresse
-            model.put("path", "../../../../../../../../img/mandelbrot.png");
 
             return Template.render("home.html", model);
         });
@@ -76,6 +80,9 @@ public class App {
 
         //dans le cas où l'on se déplace avec zqsd
         Spark.get("/fractal/:type/:zoom/:topx/:topy/:width/:height", (req, res) ->{
+            String racinePath = "../../../../../../../../../";
+            String imgPath = "resources/static/img/";
+
             FractalExplorer fractalExplorer = new FractalExplorer(
                     Double.parseDouble(req.params("topx")),
                     Double.parseDouble(req.params("topy")),
@@ -85,20 +92,25 @@ public class App {
             );
 
             fractalExplorer.requestMovePicture(req.params("type"));
-            BufferedImage imageInCache = cache.get(fractalExplorer.provideKey());
-            if(imageInCache != null){
+            File imageInCache = new File(racinePath+cachePath+fractalExplorer.provideKey()+".png");
+            if(imageInCache.exists()){
                 System.out.println("image found in cache !");
-                fractalExplorer.updatePNG(imageInCache);
+                InputStream input = new FileInputStream(racinePath+cachePath+fractalExplorer.provideKey()+".png");
+                OutputStream output = new FileOutputStream(racinePath+imgPath);
+                IOUtils.copy(input, output);
             } else {
                 System.out.println("image not found in cache !");
                 fractalExplorer.updateFractal();
-                cache.put(fractalExplorer.provideKey(), fractalExplorer.getFractalImage());
+                InputStream input = new FileInputStream("img/mandelbrot.png");
+                OutputStream output = new FileOutputStream(racinePath+cachePath+fractalExplorer.provideKey()+".png");
+                IOUtils.copy(input, output);
+                cache.put(fractalExplorer.provideKey(), new File(racinePath+cachePath+fractalExplorer.provideKey()+".png"));
             }
 
             HashMap<String, Object> model = new HashMap<>();
             model.put("mandelbrot", fractalExplorer);
             //      ../ pour chaque param dans l'adresse
-            model.put("path", "../../../../../../img/mandelbrot.png");
+            model.put("path", racinePath+imgPath+"mandelbrot.png");
 
             return Template.render("home.html", model);
         });
