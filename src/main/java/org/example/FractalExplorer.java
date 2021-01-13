@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class FractalExplorer{
+public class FractalExplorer implements Runnable{
 	
 	private final BufferedImage fractalImage;
 	
@@ -53,11 +53,21 @@ public double getYPos(double y) {
 
 	public void updateFractal() {
 		System.out.println("update");
-		ThreadClass threadClass = new ThreadClass();
-
-		threadClass.start();
+		int y=0;
 		for (int x = 0; x < width; x++ ) {
-			for (int y = 0; y < height; y++ ) {
+		y++;
+			ThreadTask task = new ThreadTask(x,y,topLeftX,topLeftY,zoomFactor,width,height);
+			Thread thread = new Thread(task);
+			thread.start();
+			try {
+				System.out.println("Thread started waiting x:"+x+" y: "+y+"  Test");
+				thread.join();
+
+				System.out.println("Wainting for thread");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			/**	for (int y = 0; y < height; y++ ) {
 				
 				double c_r = getXPos(x);
 				double c_i = getYPos(y);
@@ -68,7 +78,10 @@ public double getYPos(double y) {
 				fractalImage.setRGB(x, y, pixelColor);
 
 			}
+		 **/
+
 		}
+		System.out.println("Exited for");
 		System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updatePNG(fractalImage);
 
@@ -236,6 +249,11 @@ public double getYPos(double y) {
 
 	public String provideKey(){
 		return ""+zoomFactor+topLeftX+topLeftY;
+	}
+
+	@Override
+	public void run() {
+
 	}
 } // FractalExplorer
 
