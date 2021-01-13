@@ -14,7 +14,7 @@ public class FractalExplorer{
 	
 	private final BufferedImage fractalImage;
 	
-	private static final int MAX_ITER = 400;
+	private static final int MAX_ITER = 1000;
 
 	private static final String PATH_PICTURE = "./src/main/resources/static/img/mandelbrot.png";
 
@@ -50,7 +50,7 @@ public double getYPos(double y) {
 	 * for each point in the fractal and changing the color
 	 * based on that.
 	 **/
-	
+
 	public void updateFractal() {
 		System.out.println("update");
 		ThreadClass threadClass = new ThreadClass();
@@ -133,25 +133,21 @@ public double getYPos(double y) {
 	private void moveUp() {
 		double curHeight = height / zoomFactor;
 		topLeftY += curHeight / 6;
-		updateFractal();
 	} // moveUp
 // -------------------------------------------------------------------
 	private void moveDown() {
 		double curHeight = height / zoomFactor;
 		topLeftY -= curHeight / 6;
-		updateFractal();
 	} // moveDown
 // -------------------------------------------------------------------
 	private void moveLeft() {
 		double curWidth = width / zoomFactor;
 		topLeftX -= curWidth / 6;
-		updateFractal();
 	} // moveLeft
 // -------------------------------------------------------------------
 	private void moveRight() {
 		double curWidth = width / zoomFactor;
 		topLeftX += curWidth / 6;
-		updateFractal();
 	} // moveRight
 // -------------------------------------------------------------------		
 
@@ -165,8 +161,7 @@ public double getYPos(double y) {
 		topLeftX -= (width /2) / zoomFactor;
 		topLeftY += (height /2) / zoomFactor;
 		System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
-		updateFractal();
-		
+
 	} // adjustZoom
 
 	public void requestZoomPicture(double x,double y, int action){
@@ -223,6 +218,24 @@ public double getYPos(double y) {
 
 	public static int getHeight() {
 		return height;
+	}
+
+	public BufferedImage getFractalImage() {
+		return fractalImage;
+	}
+
+	@Override
+	public String toString() {
+		return "FractalExplorer{" +
+				"fractalImage=" + fractalImage +
+				", zoomFactor=" + zoomFactor +
+				", topLeftX=" + topLeftX +
+				", topLeftY=" + topLeftY +
+				'}';
+	}
+
+	public String provideKey(){
+		return ""+zoomFactor+topLeftX+topLeftY;
 	}
 } // FractalExplorer
 
