@@ -35,11 +35,11 @@ public class FractalExplorer{
 	}
 
 // -------------------------------------------------------------------
-	private double getXPos(double x) {
+	public double getXPos(double x) {
 		return x/zoomFactor + topLeftX;
 	} // getXPos
 // -------------------------------------------------------------------
-	private double getYPos(double y) {
+public double getYPos(double y) {
 		return y/zoomFactor - topLeftY;
 	} // getYPos
 // -------------------------------------------------------------------
@@ -53,6 +53,9 @@ public class FractalExplorer{
 	
 	public void updateFractal() {
 		System.out.println("update");
+		ThreadClass threadClass = new ThreadClass();
+
+		threadClass.start();
 		for (int x = 0; x < width; x++ ) {
 			for (int y = 0; y < height; y++ ) {
 				
@@ -63,7 +66,7 @@ public class FractalExplorer{
 				
 				int pixelColor = makeColor(iterCount);
 				fractalImage.setRGB(x, y, pixelColor);
-				
+
 			}
 		}
 		System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
