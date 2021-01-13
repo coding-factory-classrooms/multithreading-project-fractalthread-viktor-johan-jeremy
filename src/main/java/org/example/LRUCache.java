@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class LRUCache<K, V> {
     private Node<K, V> lru;
@@ -9,6 +10,8 @@ public class LRUCache<K, V> {
     private Map<K, Node<K, V>> container;
     private int capacity;
     private int currentSize;
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
@@ -19,12 +22,15 @@ public class LRUCache<K, V> {
     }
 
     public V get(K key) {
+        lock.lock();
         Node<K, V> tempNode = container.get(key);
         if (tempNode == null) {
+            lock.unlock();
             return null;
         }
         // If MRU leave the list as it is
         else if (tempNode.key == mru.key) {
+            lock.unlock();
             return mru.value;
         }
 
@@ -51,11 +57,13 @@ public class LRUCache<K, V> {
         mru = tempNode;
         mru.next = null;
 
+        lock.unlock();
         return tempNode.value;
 
     }
 
     public void put(K key, V value) {
+        lock.lock();
         if (container.containsKey(key)) {
             return;
         }
@@ -80,6 +88,7 @@ public class LRUCache<K, V> {
             }
             currentSize++;
         }
+        lock.unlock();
     }
 
     // Node for doubly linked list
