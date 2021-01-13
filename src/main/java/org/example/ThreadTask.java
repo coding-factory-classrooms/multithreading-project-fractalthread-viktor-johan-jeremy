@@ -2,6 +2,7 @@ package org.example;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 public class ThreadTask implements Runnable{
     private final BufferedImage fractalImage;
@@ -13,7 +14,7 @@ public class ThreadTask implements Runnable{
     double zoomFactor;
     double topLeftX;
     double topLeftY;
-
+    public static Object Testing;
     public ThreadTask(int x,int y,double topx, double topy, double zoomFactor, int width, int height){
         this.x = x;
         this.y = y;
@@ -24,6 +25,16 @@ public class ThreadTask implements Runnable{
         this.zoomFactor = zoomFactor;
         this.fractalImage = new BufferedImage(ThreadTask.width, ThreadTask.height, BufferedImage.TYPE_INT_RGB);
     }
+
+    public static Object getTesting() {
+        return Testing;
+    }
+
+    public static void setTesting(Object test) {
+        Testing = test;
+    }
+
+
     // -------------------------------------------------------------------
     public double getXPos(double x) {
         return x/zoomFactor + topLeftX;
@@ -35,15 +46,18 @@ public class ThreadTask implements Runnable{
     // -------------------------------------------------------------------
     @Override
     public void run() {
+        System.out.println("x: "+x+"width: "+width+"height"+height);
         for (y = 0; y < height; y++ ) {
             double c_r = getXPos(x);
             double c_i = getYPos(y);
-
             int iterCount = computeIterations(c_r, c_i);
-
             int pixelColor = makeColor(iterCount);
             fractalImage.setRGB(x, y, pixelColor);
-
+            Line line = new Line(fractalImage,width,height,x);
+            BufferedImage image = fractalImage;
+            int width = ThreadTask.width;
+            int height = ThreadTask.height;
+            setTesting(line);
         }
         System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
     }

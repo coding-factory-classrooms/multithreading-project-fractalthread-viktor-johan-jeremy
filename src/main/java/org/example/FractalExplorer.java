@@ -9,9 +9,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class FractalExplorer implements Runnable{
-	
+	private static HashMap Test;
+
 	private final BufferedImage fractalImage;
 	
 	private static final int MAX_ITER = 1000;
@@ -34,7 +40,15 @@ public class FractalExplorer implements Runnable{
 		this.fractalImage = new BufferedImage(FractalExplorer.width, FractalExplorer.height, BufferedImage.TYPE_INT_RGB);
 	}
 
-// -------------------------------------------------------------------
+	public static HashMap getTest() {
+		return Test;
+	}
+
+	public static void setTest(HashMap test) {
+		Test = test;
+	}
+
+	// -------------------------------------------------------------------
 	public double getXPos(double x) {
 		return x/zoomFactor + topLeftX;
 	} // getXPos
@@ -53,20 +67,35 @@ public double getYPos(double y) {
 
 	public void updateFractal() {
 		System.out.println("update");
+		//HashMap<Integer, Object> data = new LinkedHashMap<Integer, Object>();
 		int y=0;
 		for (int x = 0; x < width; x++ ) {
 		y++;
 			ThreadTask task = new ThreadTask(x,y,topLeftX,topLeftY,zoomFactor,width,height);
 			Thread thread = new Thread(task);
 			thread.start();
+			int i = Runtime.getRuntime().availableProcessors();
+			ExecutorService threadPool = Executors.newFixedThreadPool(i);
+			threadPool.execute(task);
+			threadPool.shutdown();
 			try {
-				System.out.println("Thread started waiting x:"+x+" y: "+y+"  Test");
-				thread.join();
-
-				System.out.println("Wainting for thread");
+				threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+
+
+			/**try {
+				System.out.println("Thread started waiting x:"+x+" y: "+y+"  Test");
+				thread.join();
+
+				//data.put(x,test);
+
+				System.out.println("Wainting for thread");
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}/**
 			/**	for (int y = 0; y < height; y++ ) {
 				
 				double c_r = getXPos(x);

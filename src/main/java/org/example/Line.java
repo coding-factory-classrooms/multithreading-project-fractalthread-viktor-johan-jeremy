@@ -6,12 +6,13 @@ public class Line {
     private BufferedImage image;
     private int lineWidth;
     private int lineHeight;
+    private int index;
 
-
-    public Line(BufferedImage image,int lineWidth,int lineHeight){
+    public Line(BufferedImage image,int lineWidth,int lineHeight,int index){
         this.image = image;
         this.lineWidth=lineWidth;
         this.lineHeight=lineHeight;
+        this.index=index;
 
     }
     public BufferedImage getImage() {
@@ -37,5 +38,13 @@ public class Line {
 
     public void setLineHeight(int lineHeight) {
         this.lineHeight = lineHeight;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }
