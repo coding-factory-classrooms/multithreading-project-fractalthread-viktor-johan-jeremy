@@ -2,22 +2,24 @@ package org.example;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class ThreadTask implements Runnable{
+public class ThreadTask implements Callable<ThreadTask.MyLine> {
     private final BufferedImage fractalImage;
     private static int width;
     private static int height;
-    private static int x;
-    private static int y;
+    private final int index;
     private static final int MAX_ITER = 1000;
     double zoomFactor;
     double topLeftX;
     double topLeftY;
-    public static Object Testing;
-    public ThreadTask(int x,int y,double topx, double topy, double zoomFactor, int width, int height){
-        this.x = x;
-        this.y = y;
+
+    ReentrantLock lock = new ReentrantLock();
+
+
+    public ThreadTask(int index,double topx, double topy, double zoomFactor, int width, int height){
+        this.index = index;
         this.topLeftX = topx;
         this.topLeftY = topy;
         ThreadTask.width = width;
@@ -25,15 +27,6 @@ public class ThreadTask implements Runnable{
         this.zoomFactor = zoomFactor;
         this.fractalImage = new BufferedImage(ThreadTask.width, ThreadTask.height, BufferedImage.TYPE_INT_RGB);
     }
-
-    public static Object getTesting() {
-        return Testing;
-    }
-
-    public static void setTesting(Object test) {
-        Testing = test;
-    }
-
 
     // -------------------------------------------------------------------
     public double getXPos(double x) {
@@ -44,23 +37,23 @@ public class ThreadTask implements Runnable{
         return y/zoomFactor - topLeftY;
     } // getYPos
     // -------------------------------------------------------------------
+
     @Override
-    public void run() {
-        System.out.println("x: "+x+"width: "+width+"height"+height);
-        for (y = 0; y < height; y++ ) {
-            double c_r = getXPos(x);
+    public MyLine call() {
+        lock.lock();
+        for (int y = 0; y < height; y++ ) {
+            double c_r = getXPos(index);
             double c_i = getYPos(y);
             int iterCount = computeIterations(c_r, c_i);
             int pixelColor = makeColor(iterCount);
-            fractalImage.setRGB(x, y, pixelColor);
-            Line line = new Line(fractalImage,width,height,x);
-            BufferedImage image = fractalImage;
-            int width = ThreadTask.width;
-            int height = ThreadTask.height;
-            setTesting(line);
+            fractalImage.setRGB(0, y, pixelColor);
         }
-        System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
+        MyLine myLine = new MyLine(fractalImage,width,height,index);
+       //System.out.println(myLine.toString()+"\n");
+        lock.unlock();
+        return myLine;
     }
+
     // -------------------------------------------------------------------
     /** Returns a posterized color based off of the iteration count
      of a given point in the fractal **/
@@ -104,4 +97,47 @@ public class ThreadTask implements Runnable{
         return iterCount;
 
     } // computeIterations
+
+    @Override
+    public String toString() {
+        return "ThreadTask{" +
+                "fractalImage=" + fractalImage +
+                ", zoomFactor=" + zoomFactor +
+                ", topLeftX=" + topLeftX +
+                ", topLeftY=" + topLeftY +
+                '}';
+    }
+
+    public static class MyLine {
+        private final BufferedImage image;
+        private final int lineWidth;
+        private final int lineHeight;
+        private final int index;
+
+        public MyLine(BufferedImage image,int lineWidth,int lineHeight,int index){
+            this.image = image;
+            this.lineWidth=lineWidth;
+            this.lineHeight=lineHeight;
+            this.index=index;
+
+        }
+
+        public BufferedImage getImage() {
+            return image;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        @Override
+        public String toString() {
+            return "MyLine{" +
+                    "image=" + image +
+                    ", lineWidth=" + lineWidth +
+                    ", lineHeight=" + lineHeight +
+                    ", index=" + index +
+                    '}';
+        }
+    }
 }
