@@ -49,7 +49,6 @@ public class ThreadTask implements Callable<ThreadTask.MyLine> {
             fractalImage.setRGB(0, y, pixelColor);
         }
         MyLine myLine = new MyLine(fractalImage,width,height,index);
-       //System.out.println(myLine.toString()+"\n");
         lock.unlock();
         return myLine;
     }

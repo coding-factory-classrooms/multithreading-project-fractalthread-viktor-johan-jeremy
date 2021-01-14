@@ -45,20 +45,16 @@ public class FractalExplorer implements Runnable{
 	 **/
 
 	public void updateFractal() {
-		//System.out.println("update");
-
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		long start = System.currentTimeMillis();
 		
 		List<Future<ThreadTask.MyLine>> futures = new ArrayList<>();
 		for (int x = 0; x < width; x++ ) {
-			//System.out.println("LE XXXX : " + x);
 			ThreadTask task = new ThreadTask(x,topLeftX,topLeftY,zoomFactor,1,height);
 			Future<ThreadTask.MyLine> future = threadPool.submit(task);
 			futures.add(future);
 		}
-		//System.out.println("STOP");
 
 		threadPool.shutdown();
 
@@ -90,14 +86,8 @@ public class FractalExplorer implements Runnable{
 		//Initializing the final image
 		for (int i = 0; i < width; i++) {
 			fractalImage.createGraphics().drawImage(buffImages[i], i, 0, null);
-			//System.out.println("iter : "+i);
 		}
 
-		//System.out.println("Image concatenated.....");
-
-
-		//System.out.println("Exited for");
-		//System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updatePNG(fractalImage);
 
 	} // updateFractal
@@ -105,7 +95,6 @@ public class FractalExplorer implements Runnable{
 	public void updatePNG(BufferedImage fractalImage){
 		try {
 			ImageIO.write(fractalImage, "png", new File(PATH_PICTURE+PICTURE_NAME));
-			//System.out.println("image : "+ PATH_PICTURE+PICTURE_NAME);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -142,12 +131,10 @@ public class FractalExplorer implements Runnable{
 		
 		topLeftX -= (width /2) / zoomFactor;
 		topLeftY += (height /2) / zoomFactor;
-		//System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 
 	} // adjustZoom
 
 	public void requestZoomPicture(double x,double y, int action){
-		//System.out.println("click : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		if(action == 0){
 			adjustZoom(x,y,zoomFactor/2);
 		}
@@ -158,26 +145,21 @@ public class FractalExplorer implements Runnable{
 	}
 
 	public void requestMovePicture(String type){
-		//System.out.println("request move with type = " +type);
 		switch (type) {
 			case "up": {
 				moveUp();
-				//System.out.println("move up");
 				break;
 			}
 			case "down": {
 				moveDown();
-				//System.out.println("move down");
 				break;
 			}
 			case "right": {
 				moveRight();
-				//System.out.println("move right");
 				break;
 			}
 			default: {
 				moveLeft();
-				//System.out.println("move left");
 				break;
 			}
 		}
