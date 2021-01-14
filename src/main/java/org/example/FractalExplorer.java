@@ -5,18 +5,21 @@ package org.example;
  */
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.*;
+import java.util.List;
 
-public class FractalExplorer{
-	
+
+public class FractalExplorer implements Runnable{
+
 	private final BufferedImage fractalImage;
-	
-	private static final int MAX_ITER = 1000;
+	private final ArrayList<ThreadTask.MyLine> mylines = new ArrayList<>();
 
-	private static final String PATH_PICTURE = "./src/main/resources/static/img/mandelbrot.png";
+	private static final String PATH_PICTURE = "./src/main/resources/static/img/";
+	private static final String PICTURE_NAME = "mandelbrot.png";
 
 	private static int width;
 	private static int height;
@@ -34,16 +37,6 @@ public class FractalExplorer{
 		this.fractalImage = new BufferedImage(FractalExplorer.width, FractalExplorer.height, BufferedImage.TYPE_INT_RGB);
 	}
 
-// -------------------------------------------------------------------
-	private double getXPos(double x) {
-		return x/zoomFactor + topLeftX;
-	} // getXPos
-// -------------------------------------------------------------------
-	private double getYPos(double y) {
-		return y/zoomFactor - topLeftY;
-	} // getYPos
-// -------------------------------------------------------------------
-
 
 	/**
 	 * Updates the fractal by computing the number of iterations
@@ -52,79 +45,66 @@ public class FractalExplorer{
 	 **/
 
 	public void updateFractal() {
-		System.out.println("update");
+		//System.out.println("update");
+
+		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		List<Future<ThreadTask.MyLine>> futures = new ArrayList<>();
 		for (int x = 0; x < width; x++ ) {
-			for (int y = 0; y < height; y++ ) {
-				
-				double c_r = getXPos(x);
-				double c_i = getYPos(y);
-				
-				int iterCount = computeIterations(c_r, c_i);
-				
-				int pixelColor = makeColor(iterCount);
-				fractalImage.setRGB(x, y, pixelColor);
-				
-			}
+			//System.out.println("LE XXXX : " + x);
+			ThreadTask task = new ThreadTask(x,topLeftX,topLeftY,zoomFactor,1,height);
+			Future<ThreadTask.MyLine> future = threadPool.submit(task);
+			futures.add(future);
 		}
-		System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
+		//System.out.println("STOP");
+
+		threadPool.shutdown();
+
+		for (Future<ThreadTask.MyLine> future : futures){
+			try {
+				ThreadTask.MyLine myline = null;
+				try {
+					myline = future.get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+				if (myline != null) {
+					mylines.add(myline.getIndex(), myline);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		BufferedImage[] buffImages = new BufferedImage[width];
+		for (ThreadTask.MyLine line:
+			 mylines) {
+			buffImages[line.getIndex()] = line.getImage();
+		}
+		//Initializing the final image
+		for (int i = 0; i < width; i++) {
+			fractalImage.createGraphics().drawImage(buffImages[i], i, 0, null);
+			//System.out.println("iter : "+i);
+		}
+
+		//System.out.println("Image concatenated.....");
+
+
+		//System.out.println("Exited for");
+		//System.out.println("update : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		updatePNG(fractalImage);
 
 	} // updateFractal
 
 	public void updatePNG(BufferedImage fractalImage){
 		try {
-			ImageIO.write(fractalImage, "png", new File(PATH_PICTURE));
-			System.out.println("image : "+ PATH_PICTURE);
+			ImageIO.write(fractalImage, "png", new File(PATH_PICTURE+PICTURE_NAME));
+			//System.out.println("image : "+ PATH_PICTURE+PICTURE_NAME);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	} // updatePNG
-
-// -------------------------------------------------------------------	
-	/** Returns a posterized color based off of the iteration count
-	    of a given point in the fractal **/
-	private int makeColor( int iterCount ) {
-		
-		int color = 0b011011100001100101101000; 
-		int mask  = 0b000000000000010101110111; 
-		int shiftMag = iterCount / 13;
-		
-		if (iterCount == MAX_ITER) 
-			return Color.BLACK.getRGB();
-		
-		return color | (mask << shiftMag);
-		
-	} // makeColor
-
-// -------------------------------------------------------------------
-
-	private int computeIterations(double c_r, double c_i) {
-
-		double z_r = 0.0;
-		double z_i = 0.0;
-		
-		int iterCount = 0;
-
-		while ( z_r*z_r + z_i*z_i <= 4.0 ) {
-			
-			double z_r_tmp = z_r;
-			
-			z_r = z_r*z_r - z_i*z_i + c_r;
-			z_i = 2*z_i*z_r_tmp + c_i;
-			
-			// Point was inside the Mandelbrot set
-			if (iterCount >= MAX_ITER) 
-				return MAX_ITER;
-			
-			iterCount++;
-			
-		}
-		
-		// Complex point was outside Mandelbrot set
-		return iterCount;
-		
-	} // computeIterations
-
 
 // -------------------------------------------------------------------
 	private void moveUp() {
@@ -157,12 +137,12 @@ public class FractalExplorer{
 		
 		topLeftX -= (width /2) / zoomFactor;
 		topLeftY += (height /2) / zoomFactor;
-		System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
+		//System.out.println("adjust : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 
 	} // adjustZoom
 
 	public void requestZoomPicture(double x,double y, int action){
-		System.out.println("click : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
+		//System.out.println("click : "+topLeftX+" and "+topLeftY+ " zoom " +zoomFactor);
 		if(action == 0){
 			adjustZoom(x,y,zoomFactor/2);
 		}
@@ -173,26 +153,26 @@ public class FractalExplorer{
 	}
 
 	public void requestMovePicture(String type){
-		System.out.println("request move with type = " +type);
+		//System.out.println("request move with type = " +type);
 		switch (type) {
 			case "up": {
 				moveUp();
-				System.out.println("move up");
+				//System.out.println("move up");
 				break;
 			}
 			case "down": {
 				moveDown();
-				System.out.println("move down");
+				//System.out.println("move down");
 				break;
 			}
 			case "right": {
 				moveRight();
-				System.out.println("move right");
+				//System.out.println("move right");
 				break;
 			}
 			default: {
 				moveLeft();
-				System.out.println("move left");
+				//System.out.println("move left");
 				break;
 			}
 		}
@@ -233,6 +213,11 @@ public class FractalExplorer{
 
 	public String provideKey(){
 		return ""+zoomFactor+topLeftX+topLeftY;
+	}
+
+	@Override
+	public void run() {
+
 	}
 } // FractalExplorer
 
