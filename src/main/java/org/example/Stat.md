@@ -1,5 +1,7 @@
 *Les stats*
 
+sur 1000 itérations
+
 Avec le threadPool :
  - 37ms (jeremy)
  - 50ms (viktor)
