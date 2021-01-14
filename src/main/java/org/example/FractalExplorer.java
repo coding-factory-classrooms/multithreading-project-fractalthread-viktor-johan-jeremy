@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 import java.util.List;
 
 
-public class FractalExplorer implements Runnable{
+public class FractalExplorer{
 
 	private final BufferedImage fractalImage;
 	private final ArrayList<ThreadTask.MyLine> mylines = new ArrayList<>();
@@ -202,10 +202,6 @@ public class FractalExplorer implements Runnable{
 		return ""+zoomFactor+topLeftX+topLeftY;
 	}
 
-	@Override
-	public void run() {
-
-	}
 } // FractalExplorer
 
 
