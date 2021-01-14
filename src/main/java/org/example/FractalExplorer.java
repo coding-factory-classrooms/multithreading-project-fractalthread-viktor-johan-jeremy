@@ -49,6 +49,8 @@ public class FractalExplorer implements Runnable{
 
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
+		long start = System.currentTimeMillis();
+		
 		List<Future<ThreadTask.MyLine>> futures = new ArrayList<>();
 		for (int x = 0; x < width; x++ ) {
 			//System.out.println("LE XXXX : " + x);
@@ -76,6 +78,9 @@ public class FractalExplorer implements Runnable{
 			}
 
 		}
+
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println(elapsed + " ms");
 
 		BufferedImage[] buffImages = new BufferedImage[width];
 		for (ThreadTask.MyLine line:
